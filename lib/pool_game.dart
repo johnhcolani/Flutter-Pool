@@ -40,6 +40,7 @@ class _PoolGameState extends State<PoolGame> {
       // Fourth row (2 balls)
       Ball(color: "purple", position: Offset(startX - ballRadius, startY + 3 * rowSpacing), velocity: Offset.zero),
       Ball(color: "white", position: Offset(startX + ballRadius, startY + 3 * rowSpacing), velocity: Offset.zero),
+
     ];
   }
 
@@ -55,9 +56,9 @@ class _PoolGameState extends State<PoolGame> {
   }
 
   void _checkBoundaryCollision(Ball ball) {
-    final tableLeft = 50.0;
-    final tableRight = 350.0;
-    final tableTop = 50.0;
+    final tableLeft = 65.0;
+    final tableRight = 342.0;
+    final tableTop = 63.0;
     final tableBottom = 500.0;
 
     if (ball.position.dx < tableLeft || ball.position.dx > tableRight) {

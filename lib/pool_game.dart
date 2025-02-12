@@ -37,9 +37,11 @@ class _PoolGameState extends State<PoolGame> {
       Ball(color: "blue", position: Offset(startX, startY + 2 * rowSpacing), velocity: Offset.zero),
       Ball(color: "orange", position: Offset(startX + 2 * ballRadius, startY + 2 * rowSpacing), velocity: Offset.zero),
 
-      // Fourth row (2 balls)
-      Ball(color: "purple", position: Offset(startX - ballRadius, startY + 3 * rowSpacing), velocity: Offset.zero),
-      Ball(color: "white", position: Offset(startX + ballRadius, startY + 3 * rowSpacing), velocity: Offset.zero),
+      // Fourth row (4 balls)
+      Ball(color: "purple", position: Offset(startX - 3 * ballRadius, startY + 3 * rowSpacing), velocity: Offset.zero),
+      Ball(color: "white", position: Offset(startX - ballRadius, startY + 3 * rowSpacing), velocity: Offset.zero),
+      Ball(color: "pink", position: Offset(startX + ballRadius, startY + 3 * rowSpacing), velocity: Offset.zero),
+      Ball(color: "cyan", position: Offset(startX + 3 * ballRadius, startY + 3 * rowSpacing), velocity: Offset.zero),
 
     ];
   }
@@ -59,7 +61,7 @@ class _PoolGameState extends State<PoolGame> {
     final tableLeft = 65.0;
     final tableRight = 342.0;
     final tableTop = 63.0;
-    final tableBottom = 500.0;
+    final tableBottom = 480.0;
 
     if (ball.position.dx < tableLeft || ball.position.dx > tableRight) {
       ball.velocity = Offset(-ball.velocity.dx, ball.velocity.dy);
@@ -269,6 +271,10 @@ class GamePainter extends CustomPainter {
         return Colors.purple;
       case "white":
         return Colors.white;
+      case "pink":
+        return Colors.pink;
+      case "cyan":
+        return Colors.cyan;
       default:
         return Colors.grey;
     }

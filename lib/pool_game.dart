@@ -38,16 +38,55 @@ class _PoolGameState extends State<PoolGame> {
     final rowSpacing = ballRadius * 2;
 
     balls.addAll([
-
-      Ball(number:8,color: Colors.black, position:Offset(startX, startY)),
-      Ball(number:2,color: Colors.blue, position:Offset(startX + ballRadius, startY + rowSpacing)),
-      Ball(number:3,color: Colors.red, position:Offset(startX - 2 * ballRadius, startY + 2 * rowSpacing)),
-      Ball(number:4,color: Colors.purple, position:Offset(startX, startY + 2 * rowSpacing)),
-      Ball(number:5,color: Colors.orange,position: Offset(startX + 2 * ballRadius, startY + 2 * rowSpacing)),
-      Ball(number:6,color: Colors.green, position:Offset(startX - 3 * ballRadius, startY + 3 * rowSpacing)),
-      Ball(number:7,color: Colors.brown, position:Offset(startX - ballRadius, startY + 3 * rowSpacing)),
-      Ball(number:9,color: Colors.yellow.shade800,position: Offset(startX + ballRadius, startY + 3 * rowSpacing)),
-      Ball(number:10,color: Colors.blue.shade800,position: Offset(startX + 3 * ballRadius, startY + 3 * rowSpacing)),
+      Ball(
+          number: 8,
+          color: Colors.black,
+          position: Offset(startX, startY)), // Top row
+      Ball(
+          number: 2,
+          color: Colors.blue,
+          position: Offset(
+              startX - ballRadius, startY + rowSpacing)), // Second row, left
+      Ball(
+          number: 3,
+          color: Colors.red,
+          position: Offset(
+              startX + ballRadius, startY + rowSpacing)), // Second row, right
+      Ball(
+          number: 4,
+          color: Colors.purple,
+          position: Offset(startX - 2 * ballRadius,
+              startY + 2 * rowSpacing)), // Third row, far left
+      Ball(
+          number: 5,
+          color: Colors.orange,
+          position:
+              Offset(startX, startY + 2 * rowSpacing)), // Third row, center
+      Ball(
+          number: 6,
+          color: Colors.green,
+          position: Offset(startX + 2 * ballRadius,
+              startY + 2 * rowSpacing)), // Third row, far right
+      Ball(
+          number: 7,
+          color: Colors.brown,
+          position: Offset(startX - 3 * ballRadius,
+              startY + 3 * rowSpacing)), // Fourth row, far left
+      Ball(
+          number: 9,
+          color: Colors.yellow.shade800,
+          position: Offset(startX - ballRadius,
+              startY + 3 * rowSpacing)), // Fourth row, center-left
+      Ball(
+          number: 10,
+          color: Colors.blue.shade800,
+          position: Offset(startX + ballRadius,
+              startY + 3 * rowSpacing)), // Fourth row, center-right
+      Ball(
+          number: 11,
+          color: Colors.pink,
+          position: Offset(startX + 3 * ballRadius,
+              startY + 3 * rowSpacing)), // Fourth row, far right
     ]);
   }
 
@@ -63,19 +102,43 @@ class _PoolGameState extends State<PoolGame> {
   }
 
   void _checkBoundaryCollision(Ball ball) {
-    const tableLeft = 65.0, tableRight = 380.0, tableTop = 63.0, tableBottom = 680.0;
+    const tableLeft = 65.0,
+        tableRight = 380.0,
+        tableTop = 63.0,
+        tableBottom = 680.0;
 
-    if (ball.position.dx < tableLeft || ball.position.dx > tableRight) {
-      ball.velocity = Offset(-ball.velocity.dx * cushionDamping, ball.velocity.dy);
+    if (ball.position.dx < tableLeft) {
+      ball.position = Offset(tableLeft, ball.position.dy);
+      ball.velocity =
+          Offset(-ball.velocity.dx * cushionDamping, ball.velocity.dy);
+    } else if (ball.position.dx > tableRight) {
+      ball.position = Offset(tableRight, ball.position.dy);
+      ball.velocity =
+          Offset(-ball.velocity.dx * cushionDamping, ball.velocity.dy);
     }
-    if (ball.position.dy < tableTop || ball.position.dy > tableBottom) {
-      ball.velocity = Offset(ball.velocity.dx, -ball.velocity.dy * cushionDamping);
+
+    if (ball.position.dy < tableTop) {
+      ball.position = Offset(ball.position.dx, tableTop);
+      ball.velocity =
+          Offset(ball.velocity.dx, -ball.velocity.dy * cushionDamping);
+    } else if (ball.position.dy > tableBottom) {
+      ball.position = Offset(ball.position.dx, tableBottom);
+      ball.velocity =
+          Offset(ball.velocity.dx, -ball.velocity.dy * cushionDamping);
     }
   }
 
   void _checkPocketCollision(Ball ball) {
-    final pockets = [Offset(50,50), Offset(380,50), Offset(50,700), Offset(380,700), Offset(220,50), Offset(220,700)];
-
+    final pockets = [
+      Offset(50, 50), // Top-left
+      Offset(380, 50), // Top-right
+      Offset(50, 700), // Bottom-left
+      Offset(380, 700), // Bottom-right
+      Offset(220, 50), // Top-middle
+      Offset(220, 700), // Bottom-middle
+      Offset(50, 375), // Middle-left
+      Offset(380, 375), // Middle-right
+    ];
     if (ball.inPocket) return;
     for (var pocket in pockets) {
       if ((ball.position - pocket).distance < 35) {
@@ -93,7 +156,7 @@ class _PoolGameState extends State<PoolGame> {
         final distance = delta.distance;
 
         if (distance < 30) {
-          final overlap = (30 - distance) / 2;
+          final overlap = (30 - distance) / 2 * 0.8;
           final correction = delta / distance * overlap;
           ball1.position -= correction;
           ball2.position += correction;
@@ -131,16 +194,33 @@ class _PoolGameState extends State<PoolGame> {
               ),
             ),
             Positioned(
-              top: 20,
+              top: 740,
               left: 20,
-              child: Text(
-                'Drag white ball to shoot!\n'
-                    'Pull back further for more power',
-                style: TextStyle(color: Colors.white, fontSize: 16, shadows: [
-                  Shadow(color: Colors.black, blurRadius: 2, offset: Offset(1,1))
-                ]),
+              child: Center(
+                child: Text(
+                  'Drag white ball to shoot!\n'
+                  'Pull back further for more power',
+                  style: TextStyle(color: Colors.black, fontSize: 16, shadows: [
+                    Shadow(
+                        color: Colors.green,
+                        blurRadius: 2,
+                        offset: Offset(1, 1))
+                  ]),
+                ),
               ),
             ),
+            Positioned(
+              top: 800,
+              left: 20,
+              right: 20,
+              child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _updateGame();
+                    });
+                  },
+                  child: Text("Update Game!")),
+            )
           ],
         ),
       ),
@@ -168,9 +248,12 @@ class _PoolGameState extends State<PoolGame> {
     if (selectedBall == null || cueStickPosition == null) return;
 
     final direction = (selectedBall!.position - cueStickPosition!).normalized();
-    final power = (selectedBall!.position - cueStickPosition!).distance.clamp(0, 150);
-    selectedBall!.velocity = direction * (power / 10);
-
+    final power =
+        (selectedBall!.position - cueStickPosition!).distance.clamp(0, 150);
+    if (power > 5) {
+      // Minimum power threshold
+      selectedBall!.velocity = direction * (power / 10);
+    }
     selectedBall = null;
     cueStickPosition = null;
 
@@ -191,16 +274,24 @@ class _PoolGameState extends State<PoolGame> {
 class Ball {
   final int number;
   final Color color;
+  final double mass;
   Offset position;
   Offset velocity;
   bool inPocket;
 
-  Ball({required this.number, required this.color, required this.position, this.velocity = Offset.zero, this.inPocket = false});
+  Ball(
+      {required this.number,
+      required this.color,
+      required this.position,
+      this.velocity = Offset.zero,
+      this.inPocket = false,
+      this.mass = 1.0});
 
   void updatePosition(double friction) {
+    final timeDelta = 0.016; // Assuming 16ms per frame
     if (inPocket) return;
     position += velocity;
-    velocity *= friction;
+    velocity -= velocity * 0.01; // Small drag force
     if (velocity.distance < 0.1) velocity = Offset.zero;
   }
 }
@@ -221,16 +312,26 @@ class GamePainter extends CustomPainter {
 
   void _drawTable(Canvas canvas) {
     // Table frame
-    canvas.drawRect(Rect.fromLTRB(30, 30, 400, 700),
-        Paint()..color = Color(0xFF5D4037));
+    canvas.drawRect(
+        Rect.fromLTRB(30, 30, 400, 700), Paint()..color = Color(0xFF5D4037));
 
     // Playing surface
-    canvas.drawRect(Rect.fromLTRB(50, 50, 380, 680),
-        Paint()..color = Color(0xFF2E7D32));
+    canvas.drawRect(
+        Rect.fromLTRB(50, 50, 380, 680), Paint()..color = Color(0xFF2E7D32));
 
     // Pockets
     final pocketPaint = Paint()..color = Colors.black;
-    for (var pos in [Offset(50,50), Offset(380,50), Offset(50,700), Offset(380,700), Offset(220,50), Offset(220,700)]) {
+    final pockets = [
+      Offset(50, 50), // Top-left
+      Offset(380, 50), // Top-right
+      Offset(50, 700), // Bottom-left
+      Offset(380, 700), // Bottom-right
+      Offset(220, 50), // Top-middle
+      Offset(220, 700), // Bottom-middle
+      Offset(50, 375), // Middle-left
+      Offset(380, 375), // Middle-right
+    ];
+    for (var pos in pockets) {
       canvas.drawCircle(pos, 20, pocketPaint);
     }
 
@@ -264,7 +365,8 @@ class GamePainter extends CustomPainter {
     if (selectedBall == null || cueStickPosition == null) return;
 
     final direction = (cueStickPosition! - selectedBall!.position).normalized();
-    final power = (cueStickPosition! - selectedBall!.position).distance.clamp(0.0, 150.0);
+    final power =
+        (cueStickPosition! - selectedBall!.position).distance.clamp(0.0, 150.0);
     final endPoint = selectedBall!.position + direction * power;
 
     // Draw power indicator

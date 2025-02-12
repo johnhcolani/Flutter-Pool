@@ -71,7 +71,9 @@ flutter:
       - assets/images/ball_orange.png
       - assets/images/ball_purple.png
       - assets/images/ball_white.png
-  #   - images/a_dot_ham.jpeg
+      - assets/sounds/
+      - assets/
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

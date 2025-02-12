@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
@@ -8,6 +9,7 @@ class PoolGame extends StatefulWidget {
 }
 
 class _PoolGameState extends State<PoolGame> {
+  late final AudioPlayer audioPlayer;
   List<Ball> balls = [];
   Offset? cueStickPosition;
   Ball? selectedBall;
@@ -19,6 +21,7 @@ class _PoolGameState extends State<PoolGame> {
   @override
   void initState() {
     super.initState();
+    audioPlayer = AudioPlayer();
     _initializeGame();
   }
 
@@ -151,29 +154,46 @@ class _PoolGameState extends State<PoolGame> {
   void _checkBallCollisions() {
     for (var i = 0; i < balls.length; i++) {
       for (var j = i + 1; j < balls.length; j++) {
-        final ball1 = balls[i], ball2 = balls[j];
+        final ball1 = balls[i];
+        final ball2 = balls[j];
+
         final delta = ball2.position - ball1.position;
         final distance = delta.distance;
 
-        if (distance < 30) {
-          final overlap = (30 - distance) / 2 * 0.8;
+        if (distance < 30 && !ball1.inPocket && !ball2.inPocket) {
+          // Resolve overlap
+          final overlap = (30 - distance) / 2;
           final correction = delta / distance * overlap;
           ball1.position -= correction;
           ball2.position += correction;
 
+          // Collision response: Conservation of Momentum
           final normal = delta / distance;
           final relativeVelocity = ball1.velocity - ball2.velocity;
           final speed = relativeVelocity.dot(normal);
 
-          if (speed > 0) continue;
-          final impulse = normal * speed * collisionRestitution;
+          if (speed > 0) continue; // Prevent double-collision response
+
+          final impulse = normal * (2 * speed) / 2;
           ball1.velocity -= impulse;
           ball2.velocity += impulse;
+
+          // Play sound if the collision is significant
+          if (speed.abs() > 1.0) { // Adjust threshold for triggering sound
+            _playCollisionSound();
+          }
         }
       }
     }
   }
 
+  void _playCollisionSound() async {
+    try {
+      await audioPlayer.play(AssetSource('assets/sounds/ball_hit.mp3'));
+    } catch (e) {
+      print('Error playing sound: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -267,6 +287,7 @@ class _PoolGameState extends State<PoolGame> {
   @override
   void dispose() {
     gameTimer?.cancel();
+    audioPlayer.dispose();
     super.dispose();
   }
 }

@@ -59,9 +59,9 @@ class _PoolGameState extends State<PoolGame> {
 
   void _checkBoundaryCollision(Ball ball) {
     final tableLeft = 65.0;
-    final tableRight = 342.0;
+    final tableRight = 380.0;
     final tableTop = 63.0;
-    final tableBottom = 480.0;
+    final tableBottom = 680.0;
 
     if (ball.position.dx < tableLeft || ball.position.dx > tableRight) {
       ball.velocity = Offset(-ball.velocity.dx, ball.velocity.dy);
@@ -74,11 +74,11 @@ class _PoolGameState extends State<PoolGame> {
   void _checkPocketCollision(Ball ball) {
     final pockets = [
       Offset(50, 50),
-      Offset(350, 50),
-      Offset(50, 500),
-      Offset(350, 500),
-      Offset(200, 50),
-      Offset(200, 500),
+      Offset(380, 50),
+      Offset(50, 700),
+      Offset(380, 700),
+      Offset(220, 50),
+      Offset(220, 700),
     ];
 
     for (var pocket in pockets) {
@@ -216,16 +216,16 @@ class GamePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     // Draw table
-    canvas.drawRect(Rect.fromLTWH(50, 50, 300, 450), tablePaint);
+    canvas.drawRect(Rect.fromLTWH(50, 50, 340, 650), tablePaint);
 
     // Draw pockets
     final pockets = [
       Offset(50, 50),
-      Offset(350, 50),
-      Offset(50, 500),
-      Offset(350, 500),
-      Offset(200, 50),
-      Offset(200, 500),
+      Offset(380, 50),
+      Offset(50, 700),
+      Offset(380, 700),
+      Offset(220, 50),
+      Offset(220, 700),
     ];
 
     for (var pocket in pockets) {

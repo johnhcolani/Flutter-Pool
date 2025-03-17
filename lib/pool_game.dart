@@ -10,6 +10,18 @@ class PoolGame extends StatefulWidget {
 }
 
 class _PoolGameState extends State<PoolGame> {
+  int score = 0; // Track the player's score
+// Assign points to each ball
+  int getBallPoints(int ballNumber) {
+    switch (ballNumber) {
+      case 0: // Cue ball (no points)
+        return 0;
+      case 8: // 8-ball (special points)
+        return 50;
+      default: // Other balls (points equal to their number)
+        return ballNumber;
+    }
+  }
   late final AudioPlayer audioPlayer;
   List<Ball> balls = [];
   Offset? cueStickPosition;
@@ -131,9 +143,9 @@ class _PoolGameState extends State<PoolGame> {
 
   void _checkBoundaryCollision(Ball ball) {
     const tableLeft = 65.0,
-        tableRight = 360.0,
+        tableRight = 366.0,
         tableTop = 63.0,
-        tableBottom = 680.0;
+        tableBottom = 665.0;
 
     if (ball.position.dx < tableLeft) {
       ball.position = Offset(tableLeft, ball.position.dy);
@@ -172,6 +184,11 @@ class _PoolGameState extends State<PoolGame> {
       if ((ball.position - pocket).distance < 35) {
         ball.inPocket = true;
         ball.velocity = Offset.zero;
+        setState(() {
+          score += getBallPoints(ball.number);
+        });
+        // Play a sound effect
+        _playPocketSound();
       }
     }
   }
@@ -246,6 +263,28 @@ class _PoolGameState extends State<PoolGame> {
                 ),
               ),
             ),
+            // Score Display
+            Positioned(
+
+              left: 20,
+              child: Container(
+                color: Colors.blue,
+                child: Text(
+                  'Score: $score',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                    Shadow(
+                    color: Colors.black,
+                    blurRadius: 2,
+                    offset: Offset(1, 1),
+                    )],
+                  ),
+                ),
+              ),
+            ),
             Positioned(
               top: 740,
               left: 30,
@@ -294,7 +333,13 @@ class _PoolGameState extends State<PoolGame> {
       ),
     );
   }
-
+  void _playPocketSound() async {
+    try {
+      await audioPlayer.play(AssetSource('assets/sounds/pocket_sound.mp3'));
+    } catch (e) {
+      print('Error playing sound: $e');
+    }
+  }
   void _onPanStart(DragStartDetails details) {
     final touchPos = details.localPosition;
     for (var ball in balls) {
@@ -395,10 +440,10 @@ class GamePainter extends CustomPainter {
     final pockets = [
       Offset(50, 50), // Top-left
       Offset(380, 50), // Top-right
-      Offset(50, 700), // Bottom-left
-      Offset(380, 700), // Bottom-right
+      Offset(50, 680), // Bottom-left
+      Offset(380, 680), // Bottom-right
       Offset(220, 50), // Top-middle
-      Offset(220, 700), // Bottom-middle
+      Offset(220, 680), // Bottom-middle
       Offset(50, 375), // Middle-left
       Offset(380, 375), // Middle-right
     ];

@@ -1,9 +1,10 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:math';
 
 class PoolGame extends StatefulWidget {
+  const PoolGame({super.key});
+
   @override
   _PoolGameState createState() => _PoolGameState();
 }
@@ -26,12 +27,16 @@ class _PoolGameState extends State<PoolGame> {
   }
 
   void _initializeGame() {
+    // Clear the existing balls
+    balls.clear();
+
     // Add white cue ball
     balls.add(Ball(
       number: 0,
       color: Colors.white,
       position: Offset(220, 600),
       velocity: Offset.zero,
+      inPocket: false,
     ));
 
     // Rack colored balls in triangle formation
@@ -42,57 +47,77 @@ class _PoolGameState extends State<PoolGame> {
 
     balls.addAll([
       Ball(
-          number: 8,
-          color: Colors.black,
-          position: Offset(startX, startY)), // Top row
+        number: 8,
+        color: Colors.black,
+        position: Offset(startX, startY),
+        velocity: Offset.zero,
+        inPocket: false,
+      ), // Top row
       Ball(
-          number: 2,
-          color: Colors.blue,
-          position: Offset(
-              startX - ballRadius, startY + rowSpacing)), // Second row, left
+        number: 2,
+        color: Colors.blue,
+        position: Offset(startX - ballRadius, startY + rowSpacing),
+        velocity: Offset.zero,
+        inPocket: false,
+      ), // Second row, left
       Ball(
-          number: 3,
-          color: Colors.red,
-          position: Offset(
-              startX + ballRadius, startY + rowSpacing)), // Second row, right
+        number: 3,
+        color: Colors.red,
+        position: Offset(startX + ballRadius, startY + rowSpacing),
+        velocity: Offset.zero,
+        inPocket: false,
+      ), // Second row, right
       Ball(
-          number: 4,
-          color: Colors.purple,
-          position: Offset(startX - 2 * ballRadius,
-              startY + 2 * rowSpacing)), // Third row, far left
+        number: 4,
+        color: Colors.purple,
+        position: Offset(startX - 2 * ballRadius, startY + 2 * rowSpacing),
+        velocity: Offset.zero,
+        inPocket: false,
+      ), // Third row, far left
       Ball(
-          number: 5,
-          color: Colors.orange,
-          position:
-              Offset(startX, startY + 2 * rowSpacing)), // Third row, center
+        number: 5,
+        color: Colors.orange,
+        position: Offset(startX, startY + 2 * rowSpacing),
+        velocity: Offset.zero,
+        inPocket: false,
+      ), // Third row, center
       Ball(
-          number: 6,
-          color: Colors.green,
-          position: Offset(startX + 2 * ballRadius,
-              startY + 2 * rowSpacing)), // Third row, far right
+        number: 6,
+        color: Colors.green,
+        position: Offset(startX + 2 * ballRadius, startY + 2 * rowSpacing),
+        velocity: Offset.zero,
+        inPocket: false,
+      ), // Third row, far right
       Ball(
-          number: 7,
-          color: Colors.brown,
-          position: Offset(startX - 3 * ballRadius,
-              startY + 3 * rowSpacing)), // Fourth row, far left
+        number: 7,
+        color: Colors.brown,
+        position: Offset(startX - 3 * ballRadius, startY + 3 * rowSpacing),
+        velocity: Offset.zero,
+        inPocket: false,
+      ), // Fourth row, far left
       Ball(
-          number: 9,
-          color: Colors.yellow.shade800,
-          position: Offset(startX - ballRadius,
-              startY + 3 * rowSpacing)), // Fourth row, center-left
+        number: 9,
+        color: Colors.yellow.shade800,
+        position: Offset(startX - ballRadius, startY + 3 * rowSpacing),
+        velocity: Offset.zero,
+        inPocket: false,
+      ), // Fourth row, center-left
       Ball(
-          number: 10,
-          color: Colors.blue.shade800,
-          position: Offset(startX + ballRadius,
-              startY + 3 * rowSpacing)), // Fourth row, center-right
+        number: 10,
+        color: Colors.blue.shade800,
+        position: Offset(startX + ballRadius, startY + 3 * rowSpacing),
+        velocity: Offset.zero,
+        inPocket: false,
+      ), // Fourth row, center-right
       Ball(
-          number: 11,
-          color: Colors.pink,
-          position: Offset(startX + 3 * ballRadius,
-              startY + 3 * rowSpacing)), // Fourth row, far right
+        number: 11,
+        color: Colors.pink,
+        position: Offset(startX + 3 * ballRadius, startY + 3 * rowSpacing),
+        velocity: Offset.zero,
+        inPocket: false,
+      ), // Fourth row, far right
     ]);
   }
-
   void _updateGame() {
     setState(() {
       for (var ball in balls) {
@@ -106,7 +131,7 @@ class _PoolGameState extends State<PoolGame> {
 
   void _checkBoundaryCollision(Ball ball) {
     const tableLeft = 65.0,
-        tableRight = 380.0,
+        tableRight = 360.0,
         tableTop = 63.0,
         tableBottom = 680.0;
 
@@ -200,22 +225,30 @@ class _PoolGameState extends State<PoolGame> {
       body: SafeArea(
         child: Stack(
           children: [
-            GestureDetector(
-              onPanStart: _onPanStart,
-              onPanUpdate: _onPanUpdate,
-              onPanEnd: _onPanEnd,
-              child: CustomPaint(
-                painter: GamePainter(
-                  balls: balls,
-                  cueStickPosition: cueStickPosition,
-                  selectedBall: selectedBall,
+            Positioned(
+              top: 5,
+              left:-10,
+              child: GestureDetector(
+                onPanStart: _onPanStart,
+                onPanUpdate: _onPanUpdate,
+                onPanEnd: _onPanEnd,
+                child: SizedBox(
+                  width: 400,
+                  height: 700,
+                  child: CustomPaint(
+                    painter: GamePainter(
+                      balls: balls,
+                      cueStickPosition: cueStickPosition,
+                      selectedBall: selectedBall,
+                    ),
+                    size: Size.infinite,
+                  ),
                 ),
-                size: Size.infinite,
               ),
             ),
             Positioned(
               top: 740,
-              left: 20,
+              left: 30,
               child: Center(
                 child: Text(
                   'Drag white ball to shoot!\n'
@@ -233,13 +266,28 @@ class _PoolGameState extends State<PoolGame> {
               top: 800,
               left: 20,
               right: 20,
-              child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _updateGame();
-                    });
-                  },
-                  child: Text("Update Game!")),
+              child: Row(
+                children: [
+                  ElevatedButton(
+                      onPressed: gameTimer?.isActive ?? false
+                          ? null // Disable the button if the timer is running
+                          : () {
+                        gameTimer = Timer.periodic(Duration(milliseconds: 16), (timer) {
+                          _updateGame();
+                        });
+                      },
+                      child: Text("Update Game!")),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _initializeGame(); // Reset the balls to their initial positions
+                        gameTimer?.cancel(); // Stop the timer
+                      });
+                    },
+                    child: Text("Reset Game"),
+                  ),
+                ],
+              ),
             )
           ],
         ),
@@ -260,7 +308,9 @@ class _PoolGameState extends State<PoolGame> {
 
   void _onPanUpdate(DragUpdateDetails details) {
     if (selectedBall != null) {
-      cueStickPosition = details.localPosition;
+      setState(() {
+        cueStickPosition = details.localPosition;
+      });
     }
   }
 
@@ -269,7 +319,7 @@ class _PoolGameState extends State<PoolGame> {
 
     final direction = (selectedBall!.position - cueStickPosition!).normalized();
     final power =
-        (selectedBall!.position - cueStickPosition!).distance.clamp(0, 150);
+    (selectedBall!.position - cueStickPosition!).distance.clamp(0, 150);
     if (power > 5) {
       // Minimum power threshold
       selectedBall!.velocity = direction * (power / 10);
@@ -381,16 +431,63 @@ class GamePainter extends CustomPainter {
       }
     }
   }
+  void _drawDashedLine(Canvas canvas, Offset start, Offset end, Paint paint) {
+    final path = Path();
+    path.moveTo(start.dx, start.dy);
+    path.lineTo(end.dx, end.dy);
 
+    final dashWidth = 10.0;
+    final dashSpace = 5.0;
+    final pathMetric = path.computeMetrics().first;
+    var distance = 0.0;
+
+    while (distance < pathMetric.length) {
+      final startOffset = pathMetric.getTangentForOffset(distance)!.position;
+      distance += dashWidth;
+      if (distance > pathMetric.length) distance = pathMetric.length;
+      final endOffset = pathMetric.getTangentForOffset(distance)!.position;
+      canvas.drawLine(startOffset, endOffset, paint);
+      distance += dashSpace;
+    }
+  }
   void _drawCueStick(Canvas canvas) {
     if (selectedBall == null || cueStickPosition == null) return;
 
-    final direction = (cueStickPosition! - selectedBall!.position).normalized();
-    final power =
-        (cueStickPosition! - selectedBall!.position).distance.clamp(0.0, 150.0);
-    final endPoint = selectedBall!.position + direction * power;
+    final cueBallCenter = selectedBall!.position;
+    final direction = (cueStickPosition! - cueBallCenter).normalized();
+    final power = (cueStickPosition! - cueBallCenter).distance.clamp(0.0, 150.0);
 
-    // Draw power indicator
+    // Draw direction line
+    final directionLinePaint = Paint()
+      ..color = Colors.white.withOpacity(0.7)
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+
+    // Draw a line from the cue ball center to the cue stick position
+    _drawDashedLine(canvas, cueBallCenter, cueStickPosition!, directionLinePaint);
+    // Optional: Add an arrowhead at the end of the line
+    final arrowHeadPaint = Paint()
+      ..color = Colors.white.withOpacity(0.7)
+      ..style = PaintingStyle.fill;
+
+    final arrowHeadPath = Path();
+    final arrowSize = 10.0;
+    final arrowEnd = cueStickPosition!;
+    final arrowDirection = (cueBallCenter - cueStickPosition!).normalized();
+
+    arrowHeadPath.moveTo(arrowEnd.dx, arrowEnd.dy);
+    arrowHeadPath.lineTo(
+      arrowEnd.dx + arrowDirection.dy * arrowSize - arrowDirection.dx * arrowSize,
+      arrowEnd.dy - arrowDirection.dx * arrowSize - arrowDirection.dy * arrowSize,
+    );
+    arrowHeadPath.lineTo(
+      arrowEnd.dx - arrowDirection.dy * arrowSize - arrowDirection.dx * arrowSize,
+      arrowEnd.dy + arrowDirection.dx * arrowSize - arrowDirection.dy * arrowSize,
+    );
+    arrowHeadPath.close();
+    canvas.drawPath(arrowHeadPath, arrowHeadPaint);
+
+    // Draw power indicator (optional)
     canvas.drawCircle(
       cueStickPosition!,
       power / 15,
@@ -399,15 +496,14 @@ class GamePainter extends CustomPainter {
 
     // Draw cue stick
     canvas.drawLine(
-      selectedBall!.position,
-      endPoint,
+      cueBallCenter,
+      cueStickPosition!,
       Paint()
         ..color = Colors.brown
         ..strokeWidth = 4
         ..strokeCap = StrokeCap.round,
     );
   }
-
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

@@ -71,7 +71,7 @@ flutter:
       - assets/images/ball_orange.png
       - assets/images/ball_purple.png
       - assets/images/ball_white.png
-      - assets/sounds/
+      - assets/sounds/ball_hit.mp3
       - assets/
 
 
